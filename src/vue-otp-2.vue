@@ -45,7 +45,7 @@ export default {
           index: i,
           value: this.otp[i]
         };
-        this.$emit(ON_INPUT_COMPLETE_EVENT, dataChange);
+        this.$emit(ON_INPUT_CHANGE_EVENT, dataChange);
       });
     },
     handleFocus(e, i) {
@@ -59,7 +59,7 @@ export default {
   watch: {
     isComplete() {
       if (this.isComplete) {
-        this.$emit(ON_INPUT_CHANGE_EVENT, [...this.otp]);
+        this.$emit(ON_INPUT_COMPLETE_EVENT, [...this.otp]);
         this.isComplete = false;
       }
     }
