@@ -1,21 +1,34 @@
 'use strict';Object.defineProperty(exports,'__esModule',{value:true});function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
 }
 
 function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
-
-    return arr2;
-  }
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
 }
 
 function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+  return arr2;
 }
 
 function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }var ON_INPUT_COMPLETE_EVENT = "onComplete";
 var ON_INPUT_CHANGE_EVENT = "onChange";
 var script = {
@@ -69,7 +82,7 @@ var script = {
           value: _this.otp[i]
         };
 
-        _this.$emit(ON_INPUT_COMPLETE_EVENT, dataChange);
+        _this.$emit(ON_INPUT_CHANGE_EVENT, dataChange);
       });
     },
     handleFocus: function handleFocus(e, i) {
@@ -86,7 +99,7 @@ var script = {
   watch: {
     isComplete: function isComplete() {
       if (this.isComplete) {
-        this.$emit(ON_INPUT_CHANGE_EVENT, _toConsumableArray(this.otp));
+        this.$emit(ON_INPUT_COMPLETE_EVENT, _toConsumableArray(this.otp));
         this.isComplete = false;
       }
     }
@@ -218,7 +231,7 @@ var __vue_render__ = function __vue_render__() {
   return _c('div', {
     staticClass: "vue-otp-2"
   }, [_vm._ssrNode(_vm._ssrList(_vm.otpLength * 2 - 1, function (v, i) {
-    return "<div>" + (i % 2 === 0 ? "<input minlength=\"1\" maxlength=\"1\"" + _vm._ssrAttr("value", _vm.otp[i / 2]) + ">" : "<!---->") + " " + (i % 2 !== 0 && true ? "<span>" + _vm._ssrEscape(_vm._s(_vm.character)) + "</span>" : "<!---->") + "</div>";
+    return "<div data-v-6d8339e3>" + (i % 2 === 0 ? "<input minlength=\"1\" maxlength=\"1\"" + _vm._ssrAttr("value", _vm.otp[i / 2]) + " data-v-6d8339e3>" : "<!---->") + " " + (i % 2 !== 0 && true ? "<span data-v-6d8339e3>" + _vm._ssrEscape(_vm._s(_vm.character)) + "</span>" : "<!---->") + "</div>";
   }))]);
 };
 
@@ -227,8 +240,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-83a2c71e_0", {
-    source: ".vue-otp-2[data-v-83a2c71e]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-83a2c71e]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-83a2c71e]{max-width:30px;padding:10px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-83a2c71e]{display:block;flex:1;text-align:center}",
+  inject("data-v-6d8339e3_0", {
+    source: ".vue-otp-2[data-v-6d8339e3]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-6d8339e3]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-6d8339e3]{max-width:30px;padding:10px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-6d8339e3]{display:block;flex:1;text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -236,16 +249,16 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-83a2c71e";
+var __vue_scope_id__ = "data-v-6d8339e3";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-83a2c71e";
+var __vue_module_identifier__ = "data-v-6d8339e3";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
 /* style inject shadow dom */
 
-var __vue_component__ = normalizeComponent({
+var __vue_component__ = /*#__PURE__*/normalizeComponent({
   render: __vue_render__,
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, undefined, createInjectorSSR, undefined);// Import vue component

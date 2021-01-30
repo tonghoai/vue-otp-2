@@ -48,7 +48,7 @@ var script = {
           index: i,
           value: this.otp[i]
         };
-        this.$emit(ON_INPUT_COMPLETE_EVENT, dataChange);
+        this.$emit(ON_INPUT_CHANGE_EVENT, dataChange);
       });
     },
 
@@ -65,7 +65,7 @@ var script = {
   watch: {
     isComplete() {
       if (this.isComplete) {
-        this.$emit(ON_INPUT_CHANGE_EVENT, [...this.otp]);
+        this.$emit(ON_INPUT_COMPLETE_EVENT, [...this.otp]);
         this.isComplete = false;
       }
     }
@@ -257,8 +257,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-83a2c71e_0", {
-    source: ".vue-otp-2[data-v-83a2c71e]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-83a2c71e]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-83a2c71e]{max-width:30px;padding:10px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-83a2c71e]{display:block;flex:1;text-align:center}",
+  inject("data-v-6d8339e3_0", {
+    source: ".vue-otp-2[data-v-6d8339e3]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-6d8339e3]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-6d8339e3]{max-width:30px;padding:10px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-6d8339e3]{display:block;flex:1;text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -266,7 +266,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-83a2c71e";
+const __vue_scope_id__ = "data-v-6d8339e3";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;
@@ -277,7 +277,7 @@ const __vue_is_functional_template__ = false;
 
 /* style inject shadow dom */
 
-const __vue_component__ = normalizeComponent({
+const __vue_component__ = /*#__PURE__*/normalizeComponent({
   render: __vue_render__,
   staticRenderFns: __vue_staticRenderFns__
 }, __vue_inject_styles__, __vue_script__, __vue_scope_id__, __vue_is_functional_template__, __vue_module_identifier__, false, createInjector, undefined, undefined);
