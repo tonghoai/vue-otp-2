@@ -15,10 +15,10 @@ export default Vue.extend({
   },
   methods: {
     complete(value) {
-      this.changeJ = value;
+      this.completeJ = value;
     },
     change(value) {
-      this.completeJ = value;
+      this.changeJ = value;
     }
   }
 });
