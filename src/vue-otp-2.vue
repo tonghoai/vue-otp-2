@@ -20,30 +20,44 @@ export default {
     this.initInputRefs(this.otpLength);
     this.initOtpLength(this.otpLength);
   },
+  computed: {
+    currentOtpLength() {
+      return this.otp.filter((item) => item).length;
+    },
+  },
   methods: {
-    handleInput(e, i) {
-      if (!this.validKeyCode(e)) {
-        return;
-      }
+    handleInput(e) {
+      // fix samsung keyboard with keyCode on press not working normally
+      const keyData = e.data;
+      const keyCode = keyData ? keyData.charCodeAt(0) : 0;
 
-      if (e.keyCode !== 8) {
-        this.clearSoftAfterInput(this.currentInputCursorIndex);
-        this.otp.splice(this.currentInputCursorIndex, 1, e.key);
-        this.fillInputValue(
-          this.currentInputCursorIndex,
-          this.otp[this.currentInputCursorIndex]
-        );
-        if (this.getInputValue(this.currentInputCursorIndex)) {
-          this.nextInput();
-        }
-      } else {
-        if (this.otp[this.currentInputCursorIndex]) {
-          this.removeInputValue(this.inputRefs[this.currentInputCursorIndex]);
-        } else {
-          this.prevInput();
-        }
-        this.clearSoftAfterInput(this.currentInputCursorIndex);
-      }
+      return (
+        this.validKeyCode(keyCode) &&
+        (this.isDeletePress(keyCode) ? this.onDelete() : this.onType(keyData))
+      );
+    },
+    isDeletePress(keyCode) {
+      return keyCode === 0;
+    },
+    onType(keyData) {
+      this.clearSoftAfterInput(this.currentInputCursorIndex);
+      this.riseChangeOtp(this.currentInputCursorIndex, keyData);
+      this.fillInputValue(
+        this.currentInputCursorIndex,
+        this.otp[this.currentInputCursorIndex]
+      );
+      // continue if input has value
+      this.getInputValue(this.currentInputCursorIndex) && this.nextInput();
+    },
+    onDelete() {
+      this.otp[this.currentInputCursorIndex]
+        ? this.removeInputValue(this.inputRefs[this.currentInputCursorIndex])
+        : this.prevInput();
+      // if press delete, delete all after input
+      this.clearSoftAfterInput(this.currentInputCursorIndex);
+    },
+    riseChangeOtp(index, data) {
+      this.otp.splice(index, 1, data);
     },
     handleFocus(e, i) {
       e.target.select();
@@ -102,11 +116,12 @@ export default {
         this.inputRefs[idx][0].value = value;
       }
     },
-    validKeyCode(key) {
-      const isLetter = key.keyCode >= 65 && key.keyCode <= 90;
-      const isNumber = key.keyCode >= 48 && key.keyCode <= 57;
-      const isDelete = key.keyCode == 8;
-      return isNumber || isLetter || isDelete;
+    validKeyCode(code) {
+      const isLetter = code >= 65 && code <= 90;
+      const isLowercaseLetter = code >= 97 && code <= 122;
+      const isNumber = code >= 48 && code <= 57;
+      const isDelete = code === 0;
+      return isNumber || isLetter || isLowercaseLetter || isDelete;
     },
     clearAfterInput(idx) {
       this.otp.splice(
@@ -128,25 +143,37 @@ export default {
         idx++;
       }
     },
+    emitEvent(eventName, payload) {
+      this.$emit(eventName, payload);
+    },
+    emitEventChange(payload) {
+      this.emitEvent(ON_INPUT_CHANGE_EVENT, payload);
+    },
+    emitEventComplete(payload) {
+      this.emitEvent(ON_INPUT_COMPLETE_EVENT, payload);
+    },
   },
   watch: {
     otp() {
-      const otpLength = this.otp.filter((item) => item).length;
+      const otpLength = this.currentOtpLength;
+
       const idxCanGet =
         otpLength === this.otpLength
           ? this.currentInputCursorIndex
           : this.currentInputCursorIndex - 1;
 
+      // onchange
       if (otpLength || otpLength === this.otpLength - 1) {
         const dataChange = {
           index: idxCanGet,
           value: this.otp[idxCanGet],
         };
-        this.$emit(ON_INPUT_CHANGE_EVENT, dataChange);
+        this.emitEventChange(dataChange);
       }
 
-      if (this.otp.filter((item) => item).length === this.otpLength) {
-        this.$emit(ON_INPUT_COMPLETE_EVENT, [...this.otp]);
+      // on complete
+      if (otpLength === this.otpLength) {
+        this.emitEventComplete([...this.otp]);
         this.blurInput(this.inputRefs[this.otpLength - 1]);
       }
     },
@@ -165,7 +192,7 @@ export default {
         :ref="'input' + i / 2"
         :inputmode="inputMode"
         :pattern="inputPattern"
-        @keyup="handleInput($event, i / 2)"
+        @input="handleInput"
         @focus="handleFocus($event, i / 2)"
       />
       <span v-if="i % 2 !== 0 && true">{{ character }}</span>
