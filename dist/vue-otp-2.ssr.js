@@ -7,7 +7,7 @@ function _arrayWithoutHoles(arr) {
 }
 
 function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
 
 function _unsupportedIterableToArray(o, minLen) {
@@ -33,74 +33,189 @@ function _nonIterableSpread() {
 var ON_INPUT_CHANGE_EVENT = "onChange";
 var script = {
   name: "VueOtp2",
-  props: ["length", "joinCharacter"],
+  props: ["length", "joinCharacter", "inputmode", "pattern"],
   data: function data() {
     return {
       otpLength: this.length || 6,
+      inputMode: this.inputmode || "numeric",
+      inputPattern: this.pattern || "[0-9]*",
       character: this.joinCharacter,
       otp: [],
-      isComplete: false
+      currentInputCursorIndex: 0,
+      inputRefs: [],
+      isDeleteKey: false // emulator delete key 
+
     };
   },
+  mounted: function mounted() {
+    this.initInputRefs(this.otpLength);
+    this.initOtpLength(this.otpLength);
+  },
+  computed: {
+    currentOtpLength: function currentOtpLength() {
+      return this.otp.filter(function (item) {
+        return item;
+      }).length;
+    }
+  },
   methods: {
-    handleInput: function handleInput(e, i) {
-      var _this = this;
+    handleInput: function handleInput(e) {
+      // fix samsung keyboard with keyCode on press not working normally
+      var keyData = e.data;
+      var keyCode = keyData ? keyData.charCodeAt(0) : 0;
+      return this.isDeletePress(keyCode) ? this.onDelete() : this.onType(keyData);
+    },
+    handleKeyup: function handleKeyup() {
+      if (this.isDeleteKey) {
+        this.prevInput();
+      }
 
-      this.$nextTick(function () {
-        _this.isComplete = false;
+      this.riseChangeIsDeleteKey(true);
+    },
+    isDeletePress: function isDeletePress(keyCode) {
+      return keyCode === 0;
+    },
+    onType: function onType(keyData) {
+      this.clearSoftAfterInput(this.currentInputCursorIndex);
+      this.riseChangeOtp(this.currentInputCursorIndex, keyData);
+      this.fillInputValue(this.currentInputCursorIndex, this.otp[this.currentInputCursorIndex]); // continue if input has value
 
-        if (e.keyCode === 8) {
-          _this.otp = _this.otp.map(function (item, idx) {
-            if (idx >= i) {
-              item = null;
-            }
+      this.getInputValue(this.currentInputCursorIndex) && this.nextInput();
+      this.riseChangeIsDeleteKey(false);
+    },
+    onDelete: function onDelete() {
+      // this.otp[this.currentInputCursorIndex]
+      //   ? this.removeInputValue(this.inputRefs[this.currentInputCursorIndex])
+      //   : this.prevInput();
+      if (this.otp[this.currentInputCursorIndex]) {
+        this.removeInputValue(this.inputRefs[this.currentInputCursorIndex]);
+      } else {
+        this.prevInput();
+        this.riseChangeIsDeleteKey(true);
+      } // if press delete, delete all after input
 
-            return item;
-          });
 
-          if (i > 0) {
-            _this.$refs["input" + (i - 1)][0].focus();
-          }
-        } else {
-          _this.otp = _this.otp.map(function (item, idx) {
-            if (idx === i) {
-              item = e.key;
-            }
-
-            return item;
-          });
-
-          if (i < _this.otpLength - 1) {
-            _this.$refs["input" + (i + 1)][0].focus();
-          } else {
-            _this.isComplete = true;
-          }
-        }
-
-        var dataChange = {
-          index: i,
-          value: _this.otp[i]
-        };
-
-        _this.$emit(ON_INPUT_CHANGE_EVENT, dataChange);
-      });
+      this.clearSoftAfterInput(this.currentInputCursorIndex);
+    },
+    riseChangeOtp: function riseChangeOtp(index, data) {
+      this.otp.splice(index, 1, data);
+    },
+    riseChangeIsDeleteKey: function riseChangeIsDeleteKey(data) {
+      this.isDeleteKey = !!data;
     },
     handleFocus: function handleFocus(e, i) {
       e.target.select();
+      var inputFilled = this.otp.filter(function (item) {
+        return item;
+      }).length;
+      this.currentInputCursorIndex = i > inputFilled ? inputFilled : i;
+      this.focusInput(this.inputRefs[this.currentInputCursorIndex]);
+    },
+    initInputRefs: function initInputRefs(inputNums) {
+      var _this = this;
 
-      if (!this.otp[i]) {
-        var c = this.otp.filter(function (item) {
-          return item;
-        }).length;
-        this.$refs["input" + c][0].focus();
+      _toConsumableArray(Array(inputNums).keys()).forEach(function (_, idx) {
+        _this.inputRefs = [].concat(_toConsumableArray(_this.inputRefs), [_this.$refs["input".concat(idx)]]);
+      });
+    },
+    initOtpLength: function initOtpLength(length) {
+      var _this2 = this;
+
+      _toConsumableArray(Array(length).keys()).forEach(function (_, idx) {
+        _this2.otp = [].concat(_toConsumableArray(_this2.otp), [null]);
+      });
+    },
+    changeInputCursor: function changeInputCursor(idx) {
+      this.currentInputCursorIndex = idx;
+    },
+    nextInputCursor: function nextInputCursor(currentIdx) {
+      var index = currentIdx < this.otpLength - 1 ? currentIdx + 1 : this.otpLength - 1;
+      this.changeInputCursor(index);
+    },
+    prevInputCursor: function prevInputCursor(currentIdx) {
+      var index = currentIdx > 0 ? currentIdx - 1 : 0;
+      this.changeInputCursor(index);
+    },
+    nextInput: function nextInput() {
+      this.nextInputCursor(this.currentInputCursorIndex);
+      this.focusInput(this.inputRefs[this.currentInputCursorIndex]);
+    },
+    prevInput: function prevInput() {
+      this.prevInputCursor(this.currentInputCursorIndex);
+      this.focusInput(this.inputRefs[this.currentInputCursorIndex]);
+    },
+    focusInput: function focusInput(inputRefs) {
+      inputRefs && inputRefs[0] && inputRefs[0].focus();
+    },
+    blurInput: function blurInput(inputRefs) {
+      inputRefs && inputRefs[0] && inputRefs[0].blur();
+    },
+    removeInputValue: function removeInputValue(inputRefs) {
+      inputRefs && inputRefs[0] && function () {
+        return inputRefs[0].value = null;
+      }();
+    },
+    getInputValue: function getInputValue(idx) {
+      return this.inputRefs[idx] && this.inputRefs[idx][0] && this.inputRefs[idx][0].value;
+    },
+    fillInputValue: function fillInputValue(idx, value) {
+      if (this.inputRefs[idx] && this.inputRefs[idx][0]) {
+        this.inputRefs[idx][0].value = value;
       }
+    },
+    validKeyCode: function validKeyCode(code) {
+      var isLetter = code >= 65 && code <= 90;
+      var isLowercaseLetter = code >= 97 && code <= 122;
+      var isNumber = code >= 48 && code <= 57;
+      var isDelete = code === 0;
+      return isNumber || isLetter || isLowercaseLetter || isDelete;
+    },
+    clearAfterInput: function clearAfterInput(idx) {
+      var _this$otp;
+
+      (_this$otp = this.otp).splice.apply(_this$otp, [idx, this.otpLength - idx].concat(_toConsumableArray(Array(this.otpLength - idx).fill(null))));
+
+      while (idx < this.otpLength) {
+        this.removeInputValue(this.inputRefs[idx]);
+        idx++;
+      }
+    },
+    clearSoftAfterInput: function clearSoftAfterInput(idx) {
+      if (idx < 0) idx = 0;
+
+      while (idx < this.otpLength) {
+        this.otp[idx] = null;
+        this.removeInputValue(this.inputRefs[idx]);
+        idx++;
+      }
+    },
+    emitEvent: function emitEvent(eventName, payload) {
+      this.$emit(eventName, payload);
+    },
+    emitEventChange: function emitEventChange(payload) {
+      this.emitEvent(ON_INPUT_CHANGE_EVENT, payload);
+    },
+    emitEventComplete: function emitEventComplete(payload) {
+      this.emitEvent(ON_INPUT_COMPLETE_EVENT, payload);
     }
   },
   watch: {
-    isComplete: function isComplete() {
-      if (this.isComplete) {
-        this.$emit(ON_INPUT_COMPLETE_EVENT, _toConsumableArray(this.otp));
-        this.isComplete = false;
+    otp: function otp() {
+      var otpLength = this.currentOtpLength;
+      var idxCanGet = otpLength === this.otpLength ? this.currentInputCursorIndex : this.currentInputCursorIndex - 1; // onchange
+
+      if (otpLength || otpLength === this.otpLength - 1) {
+        var dataChange = {
+          index: idxCanGet,
+          value: this.otp[idxCanGet]
+        };
+        this.emitEventChange(dataChange);
+      } // on complete
+
+
+      if (otpLength === this.otpLength) {
+        this.emitEventComplete(_toConsumableArray(this.otp));
+        this.blurInput(this.inputRefs[this.otpLength - 1]);
       }
     }
   }
@@ -231,7 +346,7 @@ var __vue_render__ = function __vue_render__() {
   return _c('div', {
     staticClass: "vue-otp-2"
   }, [_vm._ssrNode(_vm._ssrList(_vm.otpLength * 2 - 1, function (v, i) {
-    return "<div data-v-6d8339e3>" + (i % 2 === 0 ? "<input minlength=\"1\" maxlength=\"1\"" + _vm._ssrAttr("value", _vm.otp[i / 2]) + " data-v-6d8339e3>" : "<!---->") + " " + (i % 2 !== 0 && true ? "<span data-v-6d8339e3>" + _vm._ssrEscape(_vm._s(_vm.character)) + "</span>" : "<!---->") + "</div>";
+    return "<div data-v-79b82b34>" + (i % 2 === 0 ? "<input minlength=\"1\" maxlength=\"1\" type=\"text\"" + _vm._ssrAttr("inputmode", _vm.inputMode) + _vm._ssrAttr("pattern", _vm.inputPattern) + " data-v-79b82b34>" : "<!---->") + " " + (i % 2 !== 0 && true ? "<span data-v-79b82b34>" + _vm._ssrEscape(_vm._s(_vm.character)) + "</span>" : "<!---->") + "</div>";
   }))]);
 };
 
@@ -240,8 +355,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-6d8339e3_0", {
-    source: ".vue-otp-2[data-v-6d8339e3]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-6d8339e3]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-6d8339e3]{max-width:30px;padding:10px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-6d8339e3]{display:block;flex:1;text-align:center}",
+  inject("data-v-79b82b34_0", {
+    source: ".vue-otp-2[data-v-79b82b34]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-79b82b34]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-79b82b34]{max-width:30px;padding:11.5px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-79b82b34]{display:block;flex:1;text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -249,10 +364,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-6d8339e3";
+var __vue_scope_id__ = "data-v-79b82b34";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-6d8339e3";
+var __vue_module_identifier__ = "data-v-79b82b34";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
