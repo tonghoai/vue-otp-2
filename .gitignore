@@ -3,3 +3,4 @@ package-lock.json
 .now
 now.json
 *DS_Store
+.vercel
