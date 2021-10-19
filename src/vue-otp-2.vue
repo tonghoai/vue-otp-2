@@ -14,6 +14,7 @@ export default {
       otp: [],
       currentInputCursorIndex: 0,
       inputRefs: [],
+      isDeleteKey: false, // emulator delete key 
     };
   },
   mounted() {
@@ -31,10 +32,15 @@ export default {
       const keyData = e.data;
       const keyCode = keyData ? keyData.charCodeAt(0) : 0;
 
-      return (
-        this.validKeyCode(keyCode) &&
-        (this.isDeletePress(keyCode) ? this.onDelete() : this.onType(keyData))
-      );
+      return this.isDeletePress(keyCode)
+        ? this.onDelete()
+        : this.onType(keyData);
+    },
+    handleKeyup() {
+      if (this.isDeleteKey) {
+        this.prevInput();
+      }
+      this.riseChangeIsDeleteKey(true);
     },
     isDeletePress(keyCode) {
       return keyCode === 0;
@@ -48,16 +54,26 @@ export default {
       );
       // continue if input has value
       this.getInputValue(this.currentInputCursorIndex) && this.nextInput();
+      this.riseChangeIsDeleteKey(false);
     },
     onDelete() {
-      this.otp[this.currentInputCursorIndex]
-        ? this.removeInputValue(this.inputRefs[this.currentInputCursorIndex])
-        : this.prevInput();
+      // this.otp[this.currentInputCursorIndex]
+      //   ? this.removeInputValue(this.inputRefs[this.currentInputCursorIndex])
+      //   : this.prevInput();
+      if (this.otp[this.currentInputCursorIndex]) {
+        this.removeInputValue(this.inputRefs[this.currentInputCursorIndex]);
+      } else {
+        this.prevInput();
+        this.riseChangeIsDeleteKey(true);
+      }
       // if press delete, delete all after input
       this.clearSoftAfterInput(this.currentInputCursorIndex);
     },
     riseChangeOtp(index, data) {
       this.otp.splice(index, 1, data);
+    },
+    riseChangeIsDeleteKey(data) {
+      this.isDeleteKey = !!data;
     },
     handleFocus(e, i) {
       e.target.select();
@@ -193,6 +209,7 @@ export default {
         :inputmode="inputMode"
         :pattern="inputPattern"
         @input="handleInput"
+        @keyup="handleKeyup"
         @focus="handleFocus($event, i / 2)"
       />
       <span v-if="i % 2 !== 0 && true">{{ character }}</span>
