@@ -4,7 +4,7 @@
 
 ![](https://i.imgur.com/aGuMJff.gif)
 
-DEMO: [https://vue-otp-2.hoaitx.now.sh/](https://vue-otp-2.hoaitx.now.sh/)
+DEMO: [https://vue-otp-2-hoaitx.vercel.app/](https://vue-otp-2-hoaitx.vercel.app/)
 
 ![NPM Version](https://img.shields.io/npm/v/vue-otp-2)
 
@@ -27,12 +27,14 @@ Vue.use(VueOtp2)
 
 In App.vue
 
-``` js
+``` vue
 <vue-otp-2
   length="6"
   join-character="-"
-  @onChange=""
-  @onComplete="" 
+  inputmode="numeric"
+  pattern="[0-9]*"
+  @onChange="console.log"
+  @onComplete="console.log" 
 />
 ```
 
@@ -42,13 +44,15 @@ In App.vue
 |---|---|---|---|
 |length|String|6|The number of input|
 |join-character|String||character to join inputs|
+|inputmode|String|numeric|numeric/text|
+|pattern|String|[0-9]*|[HTML attribute: pattern](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/pattern)|
 
 ## Events
 
 |Name|Description|
 |---|---|
-|onComplete|Trigger when done|
-|onChange|Trigger when input change|
+|onComplete|All input typed|
+|onChange|Input filled|
 
 ## Style
 
@@ -64,7 +68,7 @@ In App.vue
     justify-content: center;
     input {
       max-width: 30px;
-      padding: 10px 8px;
+      padding: 11.5px 8px;
       font-size: 20px;
       border-radius: 3px;
       border: 1px solid #cecece;
@@ -82,9 +86,19 @@ In App.vue
 
 ## Release History
 
-* 1.0.0: RELEASE
+### 1.0.3: Fixed some bugs & improvement
+
+- Fix: Keypress not working on Samsung devices
+- Added inputmode & pattern html input
+- Improvement style
+- And more...
+
+### 1.0.2: Fixed some bugs
+
+- Fix: Event emit not correct
+
+### 1.0.1: RELEASE
 
 ## License
 
 MIT
-
