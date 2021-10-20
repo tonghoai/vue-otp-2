@@ -86,6 +86,10 @@ In App.vue
 
 ## Release History
 
+### 1.0.4: Fixed some bugs
+
+- Fix: length props does not work as expected
+
 ### 1.0.3: Fixed some bugs & improvement
 
 - Fix: Keypress not working on Samsung devices
