@@ -5,14 +5,14 @@ var script = {
   props: ["length", "joinCharacter", "inputmode", "pattern"],
   data: function () {
     return {
-      otpLength: this.length || 6,
+      otpLength: +this.length || 6,
       inputMode: this.inputmode || "numeric",
       inputPattern: this.pattern || "[0-9]*",
       character: this.joinCharacter,
       otp: [],
       currentInputCursorIndex: 0,
       inputRefs: [],
-      isDeleteKey: false // emulator delete key 
+      isDeleteKey: false // emulator delete key
 
     };
   },
@@ -88,15 +88,21 @@ var script = {
     },
 
     initInputRefs(inputNums) {
-      [...Array(inputNums).keys()].forEach((_, idx) => {
-        this.inputRefs = [...this.inputRefs, this.$refs[`input${idx}`]];
-      });
+      let i = 0;
+
+      while (i < inputNums) {
+        this.inputRefs = [...this.inputRefs, this.$refs[`input${i}`]];
+        i++;
+      }
     },
 
     initOtpLength(length) {
-      [...Array(length).keys()].forEach((_, idx) => {
+      let i = 0;
+
+      while (i < length) {
         this.otp = [...this.otp, null];
-      });
+        i++;
+      }
     },
 
     changeInputCursor(idx) {
@@ -378,8 +384,8 @@ var __vue_staticRenderFns__ = [];
 
 const __vue_inject_styles__ = function (inject) {
   if (!inject) return;
-  inject("data-v-79b82b34_0", {
-    source: ".vue-otp-2[data-v-79b82b34]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-79b82b34]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-79b82b34]{max-width:30px;padding:11.5px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-79b82b34]{display:block;flex:1;text-align:center}",
+  inject("data-v-10e5d926_0", {
+    source: ".vue-otp-2[data-v-10e5d926]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-10e5d926]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-10e5d926]{max-width:30px;padding:11.5px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-10e5d926]{display:block;flex:1;text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -387,7 +393,7 @@ const __vue_inject_styles__ = function (inject) {
 /* scoped */
 
 
-const __vue_scope_id__ = "data-v-79b82b34";
+const __vue_scope_id__ = "data-v-10e5d926";
 /* module identifier */
 
 const __vue_module_identifier__ = undefined;

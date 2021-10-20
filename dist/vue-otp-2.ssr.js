@@ -36,14 +36,14 @@ var script = {
   props: ["length", "joinCharacter", "inputmode", "pattern"],
   data: function data() {
     return {
-      otpLength: this.length || 6,
+      otpLength: +this.length || 6,
       inputMode: this.inputmode || "numeric",
       inputPattern: this.pattern || "[0-9]*",
       character: this.joinCharacter,
       otp: [],
       currentInputCursorIndex: 0,
       inputRefs: [],
-      isDeleteKey: false // emulator delete key 
+      isDeleteKey: false // emulator delete key
 
     };
   },
@@ -112,18 +112,20 @@ var script = {
       this.focusInput(this.inputRefs[this.currentInputCursorIndex]);
     },
     initInputRefs: function initInputRefs(inputNums) {
-      var _this = this;
+      var i = 0;
 
-      _toConsumableArray(Array(inputNums).keys()).forEach(function (_, idx) {
-        _this.inputRefs = [].concat(_toConsumableArray(_this.inputRefs), [_this.$refs["input".concat(idx)]]);
-      });
+      while (i < inputNums) {
+        this.inputRefs = [].concat(_toConsumableArray(this.inputRefs), [this.$refs["input".concat(i)]]);
+        i++;
+      }
     },
     initOtpLength: function initOtpLength(length) {
-      var _this2 = this;
+      var i = 0;
 
-      _toConsumableArray(Array(length).keys()).forEach(function (_, idx) {
-        _this2.otp = [].concat(_toConsumableArray(_this2.otp), [null]);
-      });
+      while (i < length) {
+        this.otp = [].concat(_toConsumableArray(this.otp), [null]);
+        i++;
+      }
     },
     changeInputCursor: function changeInputCursor(idx) {
       this.currentInputCursorIndex = idx;
@@ -346,7 +348,7 @@ var __vue_render__ = function __vue_render__() {
   return _c('div', {
     staticClass: "vue-otp-2"
   }, [_vm._ssrNode(_vm._ssrList(_vm.otpLength * 2 - 1, function (v, i) {
-    return "<div data-v-79b82b34>" + (i % 2 === 0 ? "<input minlength=\"1\" maxlength=\"1\" type=\"text\"" + _vm._ssrAttr("inputmode", _vm.inputMode) + _vm._ssrAttr("pattern", _vm.inputPattern) + " data-v-79b82b34>" : "<!---->") + " " + (i % 2 !== 0 && true ? "<span data-v-79b82b34>" + _vm._ssrEscape(_vm._s(_vm.character)) + "</span>" : "<!---->") + "</div>";
+    return "<div data-v-10e5d926>" + (i % 2 === 0 ? "<input minlength=\"1\" maxlength=\"1\" type=\"text\"" + _vm._ssrAttr("inputmode", _vm.inputMode) + _vm._ssrAttr("pattern", _vm.inputPattern) + " data-v-10e5d926>" : "<!---->") + " " + (i % 2 !== 0 && true ? "<span data-v-10e5d926>" + _vm._ssrEscape(_vm._s(_vm.character)) + "</span>" : "<!---->") + "</div>";
   }))]);
 };
 
@@ -355,8 +357,8 @@ var __vue_staticRenderFns__ = [];
 
 var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
   if (!inject) return;
-  inject("data-v-79b82b34_0", {
-    source: ".vue-otp-2[data-v-79b82b34]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-79b82b34]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-79b82b34]{max-width:30px;padding:11.5px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-79b82b34]{display:block;flex:1;text-align:center}",
+  inject("data-v-10e5d926_0", {
+    source: ".vue-otp-2[data-v-10e5d926]{display:flex;justify-content:space-between}.vue-otp-2 div[data-v-10e5d926]{flex:1;display:flex;align-items:center;justify-content:center}.vue-otp-2 div input[data-v-10e5d926]{max-width:30px;padding:11.5px 8px;font-size:20px;border-radius:3px;border:1px solid #cecece;text-align:center}.vue-otp-2 div span[data-v-10e5d926]{display:block;flex:1;text-align:center}",
     map: undefined,
     media: undefined
   });
@@ -364,10 +366,10 @@ var __vue_inject_styles__ = function __vue_inject_styles__(inject) {
 /* scoped */
 
 
-var __vue_scope_id__ = "data-v-79b82b34";
+var __vue_scope_id__ = "data-v-10e5d926";
 /* module identifier */
 
-var __vue_module_identifier__ = "data-v-79b82b34";
+var __vue_module_identifier__ = "data-v-10e5d926";
 /* functional template */
 
 var __vue_is_functional_template__ = false;
