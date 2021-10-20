@@ -7,14 +7,14 @@ export default {
   props: ["length", "joinCharacter", "inputmode", "pattern"],
   data: function () {
     return {
-      otpLength: this.length || 6,
+      otpLength: +this.length || 6,
       inputMode: this.inputmode || "numeric",
       inputPattern: this.pattern || "[0-9]*",
       character: this.joinCharacter,
       otp: [],
       currentInputCursorIndex: 0,
       inputRefs: [],
-      isDeleteKey: false, // emulator delete key 
+      isDeleteKey: false, // emulator delete key
     };
   },
   mounted() {
@@ -82,14 +82,18 @@ export default {
       this.focusInput(this.inputRefs[this.currentInputCursorIndex]);
     },
     initInputRefs(inputNums) {
-      [...Array(inputNums).keys()].forEach((_, idx) => {
-        this.inputRefs = [...this.inputRefs, this.$refs[`input${idx}`]];
-      });
+      let i = 0;
+      while (i < inputNums) {
+        this.inputRefs = [...this.inputRefs, this.$refs[`input${i}`]];
+        i++;
+      }
     },
     initOtpLength(length) {
-      [...Array(length).keys()].forEach((_, idx) => {
+      let i = 0;
+      while (i < length) {
         this.otp = [...this.otp, null];
-      });
+        i++;
+      }
     },
     changeInputCursor(idx) {
       this.currentInputCursorIndex = idx;
