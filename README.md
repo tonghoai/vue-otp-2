@@ -37,6 +37,31 @@ In App.vue
   @onComplete="console.log" 
 />
 ```
+``` vue Advanced Example
+<vue-otp-2
+  length="6"
+  join-character="-"
+  inputmode="numeric"
+  pattern="[0-9]*"
+  @onChange="console.log"
+  @onComplete="onFinish" 
+/>
+<script>
+export default {
+  data(){
+    return {
+      otp: null
+    }
+  },
+  methods: {
+    onFinish(otp){
+      this.otp = otp
+      console.log(this.otp) //[1, 2, 3, 4, 5, 6]
+    }
+  }
+}
+</script>
+```
 
 ## Props
 
