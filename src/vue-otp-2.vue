@@ -4,7 +4,7 @@ const ON_INPUT_CHANGE_EVENT = "onChange";
 
 export default {
   name: "VueOtp2",
-  props: ["length", "joinCharacter", "inputmode", "pattern"],
+  props: ["length", "joinCharacter", "inputmode", "pattern","autofocus"],
   data: function () {
     return {
       otpLength: +this.length || 6,
@@ -215,6 +215,7 @@ export default {
         @input="handleInput"
         @keyup="handleKeyup"
         @focus="handleFocus($event, i / 2)"
+        :autofocus="autofocus"
       />
       <span v-if="i % 2 !== 0 && true">{{ character }}</span>
     </div>
